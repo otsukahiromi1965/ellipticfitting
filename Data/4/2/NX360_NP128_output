@@ -1,0 +1,9 @@
+ LCN = 4
+ DataFile: Data/4/2/NX360_NP128
+ C_max = 1E-2
+ C_min = 1E-5
+ annule.size = 1204
+ lattice.size = 2066
+begin{loop}
+ Loop;  A;  k;  b;  X;  Lambda
+0   2              0.71           1              4591311.694     100 
