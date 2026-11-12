@@ -13,8 +13,8 @@
 #include <boost/math/special_functions/jacobi_elliptic.hpp>
 #include <boost/math/special_functions/jacobi_zeta.hpp>
 
-#include "Header/MyTypedef.hpp"
-#include "Header/InputValidation.hpp"
+#include "Functions/MyTypedef.cpp"
+#include "Functions/InputValidation.cpp"
 
 const REAL_mp myZERO = REAL_mp(0);
 const REAL_mp myONE = REAL_mp(1);
@@ -25,8 +25,8 @@ const bool rooty = true;
 
 int LCN; // Lattice coordination number: square = 4, triangular = 6.
 
-#include "Header/SpecialFunction.hpp"
-#include "Header/DispACL.hpp"
+#include "Functions/SpecialFunction.cpp"
+#include "Functions/DispACL.cpp"
 
 int main(int argc, char **argv)
 {

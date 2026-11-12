@@ -2,9 +2,9 @@
 
 // Select fitting samples in (C_min, C_max) and display samples above C_min / 10.
 
-void make_annule_lattice(
+void make_annulas_lattice(
     char **argv,
-    TWO_DIM *annule,
+    TWO_DIM *annulas,
     TWO_DIM *lattice)
 {
   using namespace std;
@@ -88,12 +88,12 @@ void make_annule_lattice(
       if (C_MIN10 < c[i][j])
         lattice->push_back({i, j, c[i][j], e[i][j]});
       if (C_MIN < c[i][j] && c[i][j] < C_MAX)
-        annule->push_back({i, j, c[i][j], e[i][j]});
+        annulas->push_back({i, j, c[i][j], e[i][j]});
     }
 
-  if (annule->size() < 3)
+  if (annulas->size() < 3)
     throw runtime_error("At least three fitting samples are required; check cutoffs");
-  for (const auto &sample : *annule)
+  for (const auto &sample : *annulas)
     if (sample.e <= 0)
       throw runtime_error("Fitting samples must have positive errors");
 
@@ -102,7 +102,7 @@ void make_annule_lattice(
          << "\n DataFile: " << string(argv[2])
          << "\n C_max = " << string(argv[3])
          << "\n C_min = " << string(argv[4])
-         << "\n annule.size = " << annule->size()
+         << "\n annulas.size = " << annulas->size()
          << "\n lattice.size = " << lattice->size()
          << endl;
 }

@@ -21,8 +21,8 @@
 #include <boost/math/special_functions/jacobi_elliptic.hpp>
 #include <boost/math/special_functions/jacobi_zeta.hpp>
 
-#include "Header/InputValidation.hpp"
-#include "Header/MyTypedef.hpp"
+#include "Functions/InputValidation.cpp"
+#include "Functions/MyTypedef.cpp"
 
 const REAL_mp myZERO = REAL_mp(0);
 const REAL_mp myONE = REAL_mp(1);
@@ -36,11 +36,11 @@ int nu_proc; // Number of MPI processes.
 int my_proc; // MPI rank of this process.
 bool rooty;  // True if this process is the root process.
 
-#include "Header/SpecialFunction.hpp"
-#include "Header/AnnularRegion.hpp"
-#include "Header/Gradient.hpp"
-#include "Header/DispDeviation.hpp"
-#include "Header/DispACL.hpp"
+#include "Functions/SpecialFunction.cpp"
+#include "Functions/AnnularRegion.cpp"
+#include "Functions/Gradient.cpp"
+#include "Functions/DispDeviation.cpp"
+#include "Functions/DispACL.cpp"
 
 void calculate_residuals(
     const TWO_DIM &system,
@@ -143,23 +143,23 @@ int main(int argc, char **argv)
     validate_k(initial_parameters[1]);
     // The candidate and accepted parameter sets alternate between slots 0 and 1.
     bool accepted = false;
-    TWO_DIM annule;
+    TWO_DIM annulas;
     TWO_DIM lattice;
-    make_annule_lattice(argv, &annule, &lattice);
+    make_annulas_lattice(argv, &annulas, &lattice);
 
-    std::vector<REAL> local_fit(annule.size());
-    std::vector<REAL> gathered_fit(annule.size());
+    std::vector<REAL> local_fit(annulas.size());
+    std::vector<REAL> gathered_fit(annulas.size());
     std::vector<REAL> local_lattice_fit(lattice.size());
     std::vector<REAL> gathered_lattice_fit(lattice.size());
     std::array<std::vector<REAL>, NPARA> local_gradient;
     std::array<std::vector<REAL>, NPARA> gathered_gradient;
     std::array<std::vector<REAL>, 2> residuals;
     for (auto &gradient : local_gradient)
-      gradient.resize(annule.size());
+      gradient.resize(annulas.size());
     for (auto &gradient : gathered_gradient)
-      gradient.resize(annule.size());
+      gradient.resize(annulas.size());
     for (auto &residual : residuals)
-      residual.resize(annule.size());
+      residual.resize(annulas.size());
 
     if (rooty)
     {
@@ -177,10 +177,10 @@ int main(int argc, char **argv)
     int loop = 0;
     while (loop < max_iterations)
     {
-      calculate_f(annule, para[!accepted], local_fit.data());
-      gather_sample_values(annule, local_fit.data(), gathered_fit.data());
-      calculate_residuals(annule, gathered_fit.data(), residuals[!accepted].data());
-      calculate_mean_squared_residual(annule, residuals[!accepted].data(), &chi[!accepted]);
+      calculate_f(annulas, para[!accepted], local_fit.data());
+      gather_sample_values(annulas, local_fit.data(), gathered_fit.data());
+      calculate_residuals(annulas, gathered_fit.data(), residuals[!accepted].data());
+      calculate_mean_squared_residual(annulas, residuals[!accepted].data(), &chi[!accepted]);
       MPI_Bcast(chi, 2, MPI_LONG_DOUBLE, root, MPI_COMM_WORLD);
 
       if (loop == 0 || chi[!accepted] < chi[accepted])
@@ -203,17 +203,17 @@ int main(int argc, char **argv)
             (loop != 0 && (chi[!accepted] - chi[accepted]) / chi[accepted] < relative_tolerance))
           break;
 
-        calculate_gradient(annule, para[accepted], local_fit.data(),
+        calculate_gradient(annulas, para[accepted], local_fit.data(),
                            local_gradient[0].data(), local_gradient[1].data(), local_gradient[2].data());
         for (int i = 0; i < NPARA; i++)
-          gather_sample_values(annule, local_gradient[i].data(), gathered_gradient[i].data());
+          gather_sample_values(annulas, local_gradient[i].data(), gathered_gradient[i].data());
 
         lambda /= 10;
       }
       else
         lambda *= 10;
 
-      calculate_parameter_step(annule, residuals[accepted].data(), gathered_gradient, lambda, diff);
+      calculate_parameter_step(annulas, residuals[accepted].data(), gathered_gradient, lambda, diff);
       MPI_Bcast(diff, NPARA, MPI_LONG_DOUBLE, root, MPI_COMM_WORLD);
       for (int i = 0; i < NPARA; i++)
         para[!accepted][i] = para[accepted][i] + diff[i];

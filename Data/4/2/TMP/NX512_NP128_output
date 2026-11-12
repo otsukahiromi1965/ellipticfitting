@@ -2,7 +2,7 @@ CN = 4
 DataFile: ./Data/4/2/NX512_NP128
 C_max = 1E-2
 C_min = 1E-5
-annule.size = 2508
+annulas.size = 2508
 lattice.size = 4272
 begin{loop}
 Loop; A; k; b; X; Lambda
